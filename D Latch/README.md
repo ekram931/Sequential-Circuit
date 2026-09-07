@@ -24,14 +24,12 @@ This project presents a complete **RTL-to-Physical Analysis** design flow for an
 ### 1. Behavioral Simulation Waveform
 Functional verification confirming the transparent state ($EN = 1$, $Q$ follows $D$) and memory retention state ($EN = 0$, $Q$ holds previous state).
 
-![D Latch Waveform](./D_Latch_Wave_Form.png)
 
 ---
 
 ### 2. Physical Layout & Floorplanning
 Visualization of the synthesized `LDCE` primitive (`Q_reg`) physically mapped inside a CLB Slice within the 28nm silicon matrix.
 
-![Floorplanning Layout](./FloorPlanning_of_D_Latch.png)
 
 ---
 
