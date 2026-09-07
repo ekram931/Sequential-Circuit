@@ -1,61 +1,68 @@
 # FPGA Implementation of a D Latch Architecture using Xilinx Vivado
 
 ## Overview
-This project demonstrates a complete **RTL-to-Physical Analysis** design flow for an asynchronous **D Latch** using VHDL and Xilinx Vivado. The project covers the full digital logic design lifecycle—from VHDL hardware description and behavioral simulation to logic synthesis, I/O planning, placement & routing (Implementation), and physical floorplan verification on a **28nm Xilinx Artix-7 FPGA** architecture.
+This project presents a complete **RTL-to-Physical Analysis** design flow for an asynchronous **D Latch** using VHDL and Xilinx Vivado. The design covers the full digital logic lifecycle—from high-level hardware description and behavioral simulation to logic synthesis, I/O pin constraints, placement & routing (Implementation), and physical floorplan verification on a **28nm Xilinx Artix-7 FPGA** architecture.
 
 ---
 
-## Key Technical Specifications
-* **HDL Language:** VHDL
-* **EDA Tool:** Xilinx Vivado Design Suite
-* **Target Architecture:** Xilinx Artix-7 (28nm HKMG Technology)
-* **Target Device:** `xc7a12ticsg325-1L` (or equivalent Artix-7 FPGA)
-* **Hardware Primitive Inferred:** `LDCE` (Transparent Latch with Gate/Enable)
-* **I/O Standard:** `LVCMOS33` (3.3V Logic Level)
+## Technical Specifications
+
+| Parameter | Specification |
+| :--- | :--- |
+| **HDL Language** | VHDL |
+| **EDA Tool** | Xilinx Vivado Design Suite |
+| **Target FPGA Family** | Xilinx Artix-7 |
+| **Process Node** | 28nm HKMG Technology |
+| **Target Device** | `xc7a12ticsg325-1L` |
+| **Inferred Hardware Primitive** | `LDCE` (Transparent Latch with Gate/Enable) |
+| **I/O Logic Standard** | `LVCMOS33` (3.3V Logic Level) |
 
 ---
 
-## Design & Workflow Steps
+## Visual Verification & Results
 
-### 1. VHDL RTL Description
-The D Latch logic is described using process-based VHDL. Implicit memory inference is utilized by omitting the `else` condition, prompting the synthesis engine to generate a latch structure instead of pure combinational logic.
+### 1. Behavioral Simulation Waveform
+Functional verification confirming the transparent state ($EN = 1$, $Q$ follows $D$) and memory retention state ($EN = 0$, $Q$ holds previous state).
 
-### 2. Behavioral Simulation & Functional Verification
-* Tested both **Transparent State** ($EN = 1$, output $Q$ follows input $D$) and **Hold State** ($EN = 0$, output $Q$ retains its previous memory state).
-* Verified functionality through timing waveform analysis using Vivado Simulator (XSIM).
+![D Latch Waveform](./D_Latch_Wave_Form.png)
 
-### 3. RTL Synthesis
+---
+
+### 2. Physical Layout & Floorplanning
+Visualization of the synthesized `LDCE` primitive (`Q_reg`) physically mapped inside a CLB Slice within the 28nm silicon matrix.
+
+![Floorplanning Layout](./FloorPlanning_of_D_Latch.png)
+
+---
+
+## Complete Design & Verification Methodology
+
+### Step 1: RTL Description (VHDL)
+The D Latch logic is described using process-based VHDL. Implicit memory inference is achieved by omitting the `else` condition, prompting Vivado to infer a physical memory element (`LDCE`) rather than pure combinational logic.
+
+### Step 2: Behavioral Simulation
+* Verified functional correctness across all input combinations using Vivado Simulator (XSIM).
+* Checked output stability during signal transitions and confirmed transparent vs. latched states.
+
+### Step 3: Logic Synthesis
 * Synthesized the high-level VHDL code into technology-specific gate-level primitives.
-* Confirmed that Vivado mapped the latch process into an **`LDCE` primitive** cell within the Netlist.
+* Verified that Vivado correctly mapped the conditional process into an **`LDCE` primitive** cell.
 
-### 4. I/O Planning & Constraints (.XDC)
-* Assigned virtual/physical package pins for inputs ($D$, $EN$) and output ($Q$).
-* Configured the **`LVCMOS33`** voltage standard across all I/O ports to satisfy hardware design rule checks (DRC).
-* Generated and linked a dedicated Xilinx Constraint File (`.xdc`).
+### Step 4: I/O Planning & Constraints (.XDC)
+* Assigned physical/package pins for inputs ($D$, $EN$) and output ($Q$).
+* Applied the **`LVCMOS33`** voltage standard across all I/O ports to satisfy hardware Design Rule Checks (DRC).
 
-### 5. Implementation (Place & Route)
-* Executed physical mapping, placement, and routing onto the target 28nm FPGA silicon layer.
+### Step 5: Implementation (Place & Route)
+* Executed placement and routing onto the target Artix-7 FPGA silicon layer.
 * Mapped the `LDCE` cell to a physical **CLB (Configurable Logic Block) Slice**.
 
-### 6. Physical Verification & Floorplanning
+### Step 6: Physical Floorplanning Analysis
 * Examined the physical Netlist using the **Device Layout / Floorplan View**.
-* Located and verified the exact hardware primitive (`Q_reg`) placed inside the FPGA slice.
-* Inspected the routing interconnects and internal primitive pins ($D$, $G/CK$, $CE$, $Q$).
+* Identified the exact hardware primitive (`Q_reg`) placed inside the FPGA slice.
+* Inspected internal routing interconnects and cell pins ($D$, $G/CK$, $CE$, $Q$).
 
-### 7. Static Timing Analysis (STA)
+### Step 7: Static Timing Analysis (STA)
 * Generated the **Report Timing Summary** post-implementation.
-* Analyzed data path propagation delays ($D \to Q$ and $EN \to Q$).
-* Handled standard unconstrained timing warnings (`no_clock`) typical for purely asynchronous latch-based designs.
+* Evaluated data path propagation delays ($D \to Q$ and $EN \to Q$).
+* Confirmed expected asynchronous timing behaviors (`no_clock` warnings handled as standard for latches).
 
----
-
-## File Structure
-
-```text
-├── src/
-│   └── d_latch.vhd          # Top-level VHDL source code
-├── sim/
-│   └── tb_d_latch.vhd       # Testbench file for behavioral simulation
-├── constraints/
-│   └── constrs_1.xdc        # Xilinx Constraint File (I/O & Pin assignments)
-└── README.md                # Project documentation
