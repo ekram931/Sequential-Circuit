@@ -62,10 +62,40 @@ end Behavioral;
 
 ## 5. Timing & Path Delay Analysis
 
-Static Timing Analysis (STA) was performed on the implemented design to evaluate both Setup (Max Delay) and Hold (Min Delay) paths.
+To ensure the design meets speed and stability requirements, **Static Timing Analysis (STA)** was performed using Vivado's Timing Engine after the Implementation phase.
 
-### Types of Analysis Performed:
-1. **Static Timing Analysis (STA):** Calculated physical interconnect delays and LUT logic delays across all paths automatically via Vivado's STA engine.
-2. **Setup Check (Max Delay):** Determines the maximum time required for data to propagate through the critical path ($S \rightarrow Q_{bar} = 7.215\text{ ns}$).
-3. **Hold Check (Min Delay):** Determines the shortest propagation path delay ($R \rightarrow Q = 2.090\text{ ns}$).
+---
+
+### Types of Timing Analysis Performed
+
+1. **Static Timing Analysis (STA):** 
+   Calculates the structural gate and wire delays across the synthesized design without requiring active simulation test vectors.
+
+2. **Setup Time Analysis (Max Delay / Worst-Case Check):** 
+   Measures the maximum time required for a logic transition at an input pin to settle stably at an output terminal.
+
+3. **Hold Time Analysis (Min Delay / Best-Case Check):** 
+   Measures the absolute minimum propagation time across the shortest physical path inside the FPGA.
+
+---
+
+### Timing Report Data Summary
+
+Since this SR Latch is an asynchronous (clockless) feedback circuit, timing is evaluated across **Unconstrained Combinational Paths (NONE to NONE)**.
+
+| Analysis Type | Path Source $\rightarrow$ Destination | Total Delay | Logic Delay (LUT) | Net Delay (Wires) | Description |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **Max Delay (Setup)** | $S \rightarrow Q_{bar}$ | **7.215 ns** | 3.848 ns | 3.366 ns | Critical Path (Worst-case delay) |
+| **Max Delay (Setup)** | $S \rightarrow Q$ | **6.764 ns** | 3.694 ns | 3.070 ns | Secondary output path delay |
+| **Min Delay (Hold)** | $R \rightarrow Q$ | **2.090 ns** | 1.380 ns | 0.710 ns | Best-case response time |
+| **Min Delay (Hold)** | $R \rightarrow Q_{bar}$ | **2.194 ns** | 1.410 ns | 0.784 ns | Minimum path delay |
+
+---
+
+### Key Analytical Takeaways
+
+* **Maximum Propagation Delay ($T_{pd, max}$):** **7.215 ns** (Worst-case delay from input $S$ to output $Q_{bar}$).
+* **Minimum Propagation Delay ($T_{pd, min}$):** **2.090 ns** (Best-case delay from input $R$ to output $Q$).
+* **Failing Endpoints:** **0** (No setup/hold timing violations detected).
+
 
