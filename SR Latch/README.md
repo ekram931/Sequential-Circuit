@@ -59,3 +59,13 @@ begin
     Qbar <= Qbar_int;
 
 end Behavioral;
+
+## 5. Timing & Path Delay Analysis
+
+Static Timing Analysis (STA) was performed on the implemented design to evaluate both Setup (Max Delay) and Hold (Min Delay) paths.
+
+### Types of Analysis Performed:
+1. **Static Timing Analysis (STA):** Calculated physical interconnect delays and LUT logic delays across all paths automatically via Vivado's STA engine.
+2. **Setup Check (Max Delay):** Determines the maximum time required for data to propagate through the critical path ($S \rightarrow Q_{bar} = 7.215\text{ ns}$).
+3. **Hold Check (Min Delay):** Determines the shortest propagation path delay ($R \rightarrow Q = 2.090\text{ ns}$).
+
