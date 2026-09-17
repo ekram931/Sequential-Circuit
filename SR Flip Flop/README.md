@@ -22,47 +22,32 @@ This repository contains the VHDL implementation and functional simulation of a 
 |   0   |  ↑    | 1 | 0 |       1       |   0   | Set State          |
 |   0   |  ↑    | 1 | 1 |       X       |   X   | Forbidden / Invalid|
 
+
+
+| Pin Name | Direction | Description |
+| :--- | :---: | :--- |
+| **S** | Input | Set input (Forces output `Q` to High) |
+| **R** | Input | Reset input (Forces output `Q` to Low) |
+| **CLK** | Input | Master Clock input (Rising-edge triggered) |
+| **RST** | Input | Asynchronous Reset (Active High) |
+| **Q** | Output | Primary Output |
+| **Qbar** | Output | Inverted Primary Output |
+
 ---
 
-## 📂 Source Code (`SR_Flip_Flop.vhd`)
+## 📈 Waveform Analysis
 
-```vhdl
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+During the behavioral simulation in Vivado, the circuit was tested against the following timeline:
 
-entity sr_flip_flop is
-    Port (
-        S     : in  STD_LOGIC;
-        R     : in  STD_LOGIC;
-        CLK   : in  STD_LOGIC;
-        RST   : in  STD_LOGIC;
-        Q     : out STD_LOGIC;
-        Qbar  : out STD_LOGIC
-    );
-end sr_flip_flop;
+1. **`0 ns - 10 ns` (Reset Phase):** `RST` is set to `1`. Output `Q` initializes to `0` and `Qbar` to `1` regardless of clock edges.
+2. **`10 ns - 30 ns` (Set Phase):** `S = 1`, `R = 0`, and `RST = 0`. At the clock rising edge (`20 ns`), `Q` transitions to `1`.
+3. **`30 ns - 40 ns` (Hold Phase):** `S = 0`, `R = 0`. Output `Q` maintains its previous state (`1`).
+4. **`40 ns+` (Reset Phase):** `S = 0`, `R = 1`. At the clock rising edge (`40 ns`), `Q` transitions back to `0`.
 
-architecture Behavioral of sr_flip_flop is
-    signal q_internal : STD_LOGIC := '0';
-begin
+---
 
-    process(CLK, RST)
-    begin
-        if (RST = '1') then
-            q_internal <= '0';
-        elsif rising_edge(CLK) then
-            if (S = '0' and R = '0') then
-                q_internal <= q_internal;
-            elsif (S = '0' and R = '1') then
-                q_internal <= '0';
-            elsif (S = '1' and R = '0') then
-                q_internal <= '1';
-            elsif (S = '1' and R = '1') then
-                q_internal <= 'X';
-            end if;
-        end if;
-    end process;
-
-    Q    <= q_internal;
-    Qbar <= not q_internal;
-
-end Behavioral;
+## 💡 Real-World Applications
+Although modern high-speed synchronous systems prefer D Flip-Flops or JK Flip-Flops, SR Flip-Flops are fundamental in digital logic for:
+- **Switch Debouncing Circuits:** Removing mechanical contact bounce in push buttons.
+- **Control Latching:** Holding alarm states or control bits until explicitly cleared.
+- **Data Storage Units:** Basic memory cell structure in Static RAM (SRAM).
